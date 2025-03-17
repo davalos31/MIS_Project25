@@ -1,0 +1,593 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ERP System</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MIS_PROJECT.styles.css" asp-append-version="true" />
+    <style>
+        /* Variables para colores y dimensiones */
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #1abc9c;
+            --sidebar-text: #ecf0f1;
+            --sidebar-icon: #3498db;
+            --sidebar-submenu-bg: #1e2b38;
+            --transition-speed: 0.3s;
+        }
+
+        /* Estilos globales */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+        }
+
+        /* Wrapper principal */
+        .wrapper {
+            display: flex;
+            height: 100vh;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+            width: 100%; /* Asegurar que no exceda el ancho del viewport */
+            position: relative; /* Para posicionamiento correcto */
+        }
+
+        /* Sidebar */
+        #sidebar-wrapper {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width); /* Ancho mínimo fijo */
+            height: 100vh;
+            background: var(--sidebar-bg);
+            background-image: linear-gradient(to bottom, #2c3e50, #1a252f);
+            transition: all var(--transition-speed);
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+            z-index: 1000;
+            position: fixed; /* Fijar el sidebar */
+            left: 0;
+            top: 0;
+        }
+
+            /* Scrollbar personalizada para el sidebar */
+            #sidebar-wrapper::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            #sidebar-wrapper::-webkit-scrollbar-track {
+                background: var(--sidebar-bg);
+            }
+
+            #sidebar-wrapper::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+            }
+
+                #sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+
+        /* Encabezado del sidebar */
+        .sidebar-heading {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--sidebar-text);
+            background-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Logo del sidebar */
+        .sidebar-logo {
+            font-size: 1.8rem;
+            color: var(--sidebar-icon);
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        /* Elementos del menú */
+        .list-group-flush {
+            padding-top: 0.5rem;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 0.8rem 1.5rem;
+            background: transparent !important;
+            color: var(--sidebar-text) !important;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-left: 4px solid transparent;
+            transition: all var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .list-group-item:hover {
+                background: var(--sidebar-hover) !important;
+                border-left: 4px solid rgba(26, 188, 156, 0.5);
+                padding-left: 1.8rem;
+            }
+
+            .list-group-item.active {
+                background: rgba(26, 188, 156, 0.2) !important;
+                border-left: 4px solid var(--sidebar-active);
+                font-weight: 600;
+            }
+
+            /* Iconos del menú */
+            .list-group-item i {
+                width: 24px;
+                text-align: center;
+                margin-right: 12px;
+                color: var(--sidebar-icon);
+                font-size: 1.1rem;
+                transition: all var(--transition-speed);
+            }
+
+            .list-group-item:hover i {
+                transform: translateX(3px);
+                color: var(--sidebar-active);
+            }
+
+            .list-group-item.active i {
+                color: var(--sidebar-active);
+            }
+
+        /* Dropdown toggle */
+        .dropdown-toggle {
+            position: relative;
+        }
+
+            .dropdown-toggle::after {
+                position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                transition: transform var(--transition-speed);
+            }
+
+            .dropdown-toggle[aria-expanded="true"]::after {
+                transform: translateY(-50%) rotate(180deg);
+            }
+
+        /* Submenús */
+        .collapse {
+            background-color: var(--sidebar-submenu-bg);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            margin-left: 1.5rem;
+        }
+
+            .collapse .list-group-item {
+                padding: 0.7rem 1rem 0.7rem 1.5rem;
+                font-size: 0.95rem;
+                border-left: none;
+                border-radius: 0;
+            }
+
+                .collapse .list-group-item:hover {
+                    background-color: rgba(255, 255, 255, 0.05) !important;
+                    border-left: none;
+                    padding-left: 1.8rem;
+                }
+
+                .collapse .list-group-item.active {
+                    background-color: rgba(26, 188, 156, 0.1) !important;
+                    border-left: none;
+                }
+
+                .collapse .list-group-item i {
+                    font-size: 0.9rem;
+                }
+
+        /* Separador de categorías */
+        .sidebar-category {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        /* Badges */
+        .sidebar-badge {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        /* Contenido principal */
+        #page-content-wrapper {
+            flex-grow: 1;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+            width: calc(100% - var(--sidebar-width)); /* Ancho ajustado */
+            margin-left: var(--sidebar-width); /* Margen para el sidebar */
+            transition: all var(--transition-speed);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Altura mínima para ocupar toda la pantalla */
+        }
+
+        /* Estado toggled */
+        .toggled #sidebar-wrapper {
+            margin-left: calc(var(--sidebar-width) * -1);
+            left: -280px; /* Ocultar completamente */
+        }
+
+        .toggled #page-content-wrapper {
+            width: 100%; /* Ancho completo cuando el sidebar está oculto */
+            margin-left: 0; /* Sin margen cuando el sidebar está oculto */
+        }
+
+        /* Navbar */
+        .navbar {
+            z-index: 1030;
+            padding: 0.8rem 1.5rem;
+            width: 100%; /* Asegurar que no exceda el ancho */
+        }
+
+        /* Botón de toggle */
+        #menu-toggle {
+            background-color: var(--sidebar-bg);
+            border: none;
+            padding: 0.5rem 0.75rem;
+            transition: all var(--transition-speed);
+        }
+
+            #menu-toggle:hover {
+                background-color: var(--sidebar-active);
+                transform: scale(1.05);
+            }
+
+            #menu-toggle i {
+                color: white;
+            }
+
+        /* Contenedor principal */
+        .container-fluid {
+            flex-grow: 1;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+            padding: 1.5rem;
+            width: 100%; /* Asegurar que no exceda el ancho */
+            box-sizing: border-box; /* Incluir padding en el ancho */
+        }
+
+        /* Footer */
+        .footer {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            width: 100%; /* Asegurar que no exceda el ancho */
+            box-sizing: border-box; /* Incluir padding en el ancho */
+        }
+
+        /* Footer mejorado */
+        .footer-top {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: #ffffff;
+            padding: 3rem 0;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+            .social-icon:hover {
+                background-color: #3498db;
+                color: #ffffff;
+                transform: translateY(-3px);
+            }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+            .footer-link:hover {
+                color: #3498db;
+                transform: translateX(5px);
+            }
+
+        .footer-bottom {
+            background-color: #1a252f;
+            padding: 1rem 0;
+        }
+
+        .footer-bottom-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .footer-bottom-link:hover {
+                color: #3498db;
+            }
+
+        /* Efecto ripple para los elementos del menú */
+        .list-group-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @@keyframes ripple {
+            to
+
+        {
+            transform: scale(4);
+            opacity: 0;
+        }
+
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            #sidebar-wrapper
+
+        {
+            margin-left: calc(var(--sidebar-width) * -1);
+            left: -280px; /* Ocultar completamente en móviles */
+        }
+
+        #page-content-wrapper {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .toggled #sidebar-wrapper {
+            margin-left: 0;
+            left: 0; /* Mostrar completamente */
+        }
+
+        /* Ajustes para el footer en móviles */
+        .footer-top .row > div:not(:last-child) {
+            margin-bottom: 1.5rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper" id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <i class="fas fa-cubes sidebar-logo"></i>ERP System
+              
+            </div>
+            <div class="list-group list-group-flush">
+                <!-- Dashboard -->
+                <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt"></i>Dashboard
+
+                </a>
+
+                <!-- Categoría: Operations -->
+                <div class="sidebar-category">Operations</div>
+
+                <!-- Sales -->
+                <a href="#salesSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action dropdown-toggle">
+                    <i class="fas fa-chart-line"></i>Sales
+                    <span class="sidebar-badge bg-success">New</span>
+                </a>
+                <div class="collapse" id="salesSubmenu">
+                    <a asp-controller="Sales" asp-action="Orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart"></i>Orders
+                    </a>
+                    <a asp-controller="Sales" asp-action="Customers" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users"></i>Customers
+                    </a>
+                    <a asp-controller="Sales" asp-action="Invoices" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-invoice-dollar"></i>Invoices
+                    </a>
+                </div>
+
+                <!-- Inventory -->
+                <a href="#inventorySubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action dropdown-toggle">
+                    <i class="fas fa-warehouse"></i>Inventory
+                    <span class="sidebar-badge bg-warning text-dark">3</span>
+                </a>
+                <div class="collapse" id="inventorySubmenu">
+                    <a asp-controller="Inventory" asp-action="Products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i>Products
+                    </a>
+                    <a asp-controller="Inventory" asp-action="Stock" class="list-group-item list-group-item-action">
+                        <i class="fas fa-dolly"></i>Stock
+                    </a>
+                    <a asp-controller="Inventory" asp-action="Transfers" class="list-group-item list-group-item-action">
+                        <i class="fas fa-exchange-alt"></i>Transfers
+                    </a>
+                </div>
+
+                <!-- Purchasing -->
+                <a href="#purchasingSubmenu" data-bs-toggle="collapse" class="list-group-item list-group-item-action dropdown-toggle">
+                    <i class="fas fa-shopping-bag"></i>Purchasing
+                </a>
+                <div class="collapse" id="purchasingSubmenu">
+                    <a asp-controller="Purchasing" asp-action="PurchaseOrders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-invoice"></i>Purchase Orders
+                    </a>
+                    <a asp-controller="Purchasing" asp-action="Vendors" class="list-group-item list-group-item-action">
+                        <i class="fas fa-truck"></i>Vendors
+                    </a>
+                </div>
+
+              
+
+             
+
+              
+
+        
+            </div>
+        </div>
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+
+            
+                <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm">
+                    <div class="container-fluid">
+                        <button class="btn" id="menu-toggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ms-auto">
+                                <!-- Notifications -->
+                                <li class="nav-item dropdown me-3">
+                                    <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-bell"></i>
+                                      
+                                    </a>
+                                   
+                                </li>
+
+                              
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+            <!-- Main Content Area -->
+            <div class="content-wrapper">
+                <div class="container-fluid py-3">
+                    <h2 class="mb-4">@ViewData["Title"]</h2>
+                    @RenderBody()
+                </div>
+            </div>
+
+            <!-- Fixed Footer -->
+            <footer class="footer border-top py-4" style="background: linear-gradient(to right, #2c3e50, #34495e); color: #ffffff;">
+          
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            const menuToggle = document.getElementById('menu-toggle');
+            const wrapper = document.getElementById('wrapper');
+
+            menuToggle.addEventListener('click', function() {
+                wrapper.classList.toggle('toggled');
+            });
+
+            // Highlight active menu item
+            const currentUrl = window.location.pathname;
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && href !== '#' && currentUrl.includes(href)) {
+                    item.classList.add('active');
+
+                    // If it's a submenu item, expand its parent
+                    const parent = item.closest('.collapse');
+                    if (parent) {
+                        parent.classList.add('show');
+                        const parentToggle = document.querySelector(`[href="#${parent.id}"]`);
+                        if (parentToggle) {
+                            parentToggle.classList.add('active');
+                            parentToggle.setAttribute('aria-expanded', 'true');
+                        }
+                    }
+                }
+            });
+
+            // Add ripple effect to menu items
+            const buttons = document.querySelectorAll('.list-group-item');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    let x = e.clientX - e.target.getBoundingClientRect().left;
+                    let y = e.clientY - e.target.getBoundingClientRect().top;
+
+                    let ripple = document.createElement('span');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    ripple.classList.add('ripple');
+
+                    this.appendChild(ripple);
+
+                    setTimeout(function() {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* Efecto ripple para los elementos del menú */
+        .list-group-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @@keyframes ripple {
+            to
+
+        {
+            transform: scale(4);
+            opacity: 0;
+        }
+
+        }
+    </style>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
